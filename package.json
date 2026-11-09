@@ -1,0 +1,30 @@
+{
+  "name": "transit-tap-pay",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Transit fare payment: passenger wallet + NFC/QR tap-to-pay, driver terminal, live balance sync",
+  "main": "server.js",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server.js",
+    "dev": "node --disable-warning=ExperimentalWarning --watch server.js",
+    "admin": "node --disable-warning=ExperimentalWarning scripts/admin.js",
+    "test": "node --disable-warning=ExperimentalWarning --test"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/ios": "^8.5.3",
+    "bcryptjs": "^2.4.3",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
+    "express": "^4.21.2",
+    "html5-qrcode": "^2.3.8",
+    "jsonwebtoken": "^9.0.2",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.1"
+  }
+}

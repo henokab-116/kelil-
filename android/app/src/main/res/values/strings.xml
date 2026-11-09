@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Transit Tap Pay</string>
+    <string name="title_activity_main">Transit Tap Pay</string>
+    <string name="package_name">com.github.henokab116.transittappay</string>
+    <string name="custom_url_scheme">com.github.henokab116.transittappay</string>
+</resources>

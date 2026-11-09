@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "Transit Tap Pay",
+    "slug": "transit-tap-pay",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "android": {
+      "package": "com.github.henokab116.transittappay",
+      "permissions": ["android.permission.NFC", "android.permission.CAMERA", "android.permission.INTERNET"]
+    },
+    "plugins": [
+      "react-native-nfc-manager",
+      ["expo-camera", { "cameraPermission": "Allow Transit Tap Pay to scan passenger QR codes." }]
+    ]
+  }
+}

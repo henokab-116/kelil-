@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="am" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0d6efd">
+  <title>Transit Tap &amp; Pay</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/css/app.css" rel="stylesheet">
+</head>
+<body>
+<div id="toastContainer"></div>
+
+<div class="app-container p-3">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <a href="/driver" class="small text-decoration-none" data-i18n="driverApp">የሹፌር መተግበሪያ</a>
+    <div class="d-flex gap-2">
+      <select id="langSelect" class="form-select form-select-sm w-auto rounded-pill fw-semibold border-primary" aria-label="Language">
+        <option value="am">🇪🇹 አማርኛ</option>
+        <option value="en">🇬🇧 English</option>
+        <option value="sid">🇪🇹 Sidaamu Afoo</option>
+        <option value="om">🇪🇹 Afaan Oromoo</option>
+        <option value="ti">🇪🇹 ትግርኛ</option>
+        <option value="so">🇸🇴 Soomaali</option>
+      </select>
+      <button id="themeBtn" class="btn btn-outline-secondary btn-sm rounded-circle" aria-label="Theme"><i class="bi bi-moon-stars-fill" id="themeIcon"></i></button>
+    </div>
+  </div>
+
+  <!-- AUTH -->
+  <div id="authScreen">
+    <div class="text-center my-4">
+      <i class="bi bi-nfc text-primary display-3"></i>
+      <h3 class="fw-bold mt-2">Transit Tap &amp; Pay</h3>
+      <p class="text-secondary small" data-i18n="subtitle"></p>
+    </div>
+    <div class="card border-0 shadow-sm rounded-4 p-4">
+      <ul class="nav nav-pills nav-justified mb-3">
+        <li class="nav-item"><button class="nav-link active fw-bold" id="tabLogin" data-action="authTab" data-tab="login" data-i18n="tabLogin"></button></li>
+        <li class="nav-item"><button class="nav-link fw-bold" id="tabRegister" data-action="authTab" data-tab="register" data-i18n="tabRegister"></button></li>
+      </ul>
+      <div id="authAlert" class="alert alert-danger d-none py-2 small fw-semibold text-center" role="alert"></div>
+
+      <form id="loginForm" novalidate>
+        <div class="mb-3">
+          <label class="form-label small fw-bold" for="loginId" data-i18n="labelPhoneOrEmail"></label>
+          <input id="loginId" class="form-control" autocomplete="username" placeholder="0911223344" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-bold" for="loginPassword" data-i18n="labelPassword"></label>
+          <input type="password" id="loginPassword" class="form-control" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 py-2 rounded-3 fw-bold" data-i18n="btnSignIn"></button>
+      </form>
+
+      <form id="registerForm" class="d-none" novalidate>
+        <div class="mb-2">
+          <label class="form-label small fw-bold" for="regName" data-i18n="labelFullName"></label>
+          <input id="regName" class="form-control" autocomplete="name" required>
+        </div>
+        <div class="mb-2">
+          <label class="form-label small fw-bold" for="regPhone" data-i18n="labelPhone"></label>
+          <input type="tel" id="regPhone" class="form-control" autocomplete="tel" placeholder="0911223344" required>
+        </div>
+        <div class="mb-2">
+          <label class="form-label small fw-bold" for="regEmail" data-i18n="labelEmailOptional"></label>
+          <input type="email" id="regEmail" class="form-control" autocomplete="email">
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-bold" for="regPassword" data-i18n="labelPassword"></label>
+          <input type="password" id="regPassword" class="form-control" autocomplete="new-password" minlength="6" required>
+        </div>
+        <button type="submit" class="btn btn-success w-100 py-2 rounded-3 fw-bold" data-i18n="btnSignUp"></button>
+      </form>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="appScreens" class="d-none">
+    <div class="mb-3">
+      <h6 class="text-body-secondary mb-0" data-i18n="welcome"></h6>
+      <h5 class="fw-bold mb-0" id="userName"></h5>
+    </div>
+
+    <div id="homeScreen" class="screen-view active">
+      <div class="card card-gradient border-0 shadow-sm rounded-4 p-4 mb-3">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="text-white-50 small" data-i18n="balanceLabel"></span>
+          <i class="bi bi-nfc fs-4"></i>
+        </div>
+        <h1 class="display-5 fw-bold mb-3"><span id="userBalance">0.00</span> ETB</h1>
+        <div class="d-flex justify-content-between align-items-center pt-2">
+          <span class="small opacity-75"><span data-i18n="cardLabel"></span>: <strong id="cardUid">--</strong></span>
+          <button id="topupOpenBtn" class="btn btn-sm btn-light rounded-pill px-3 fw-semibold text-primary d-none" data-bs-toggle="modal" data-bs-target="#topupModal">
+            <i class="bi bi-wallet-fill"></i> <span data-i18n="topupBtn"></span>
+          </button>
+        </div>
+      </div>
+      <button class="btn btn-primary w-100 py-4 rounded-4 fw-bold fs-5 shadow-sm" data-bs-toggle="modal" data-bs-target="#qrModal">
+        <i class="bi bi-qr-code d-block fs-1 mb-1"></i> <span data-i18n="qrBtn"></span>
+      </button>
+    </div>
+
+    <div id="transactionsScreen" class="screen-view">
+      <h6 class="fw-bold mb-3" data-i18n="historyTitle"></h6>
+      <div class="list-group list-group-flush rounded-4 shadow-sm overflow-hidden" id="txList"></div>
+    </div> 
+        <div id="gameScreen" class="screen-view">
+      <div class="card border-0 shadow-sm rounded-4 p-3 text-center">
+        <div class="d-flex justify-content-between align-items-center">
+          <strong>Score: <span id="gameScore">0</span></strong>
+          <span id="gameLevel" class="badge text-bg-success">EASY</span>
+          <span class="small text-secondary">Best: <span id="gameBest">0</span></span>
+        </div>
+        <canvas id="gameCanvas" width="300" height="380" class="rounded-3 my-2 mx-auto" style="max-width:100%;background:#425e7a;touch-action:none"></canvas>
+        <div id="gameMsg" class="small text-secondary mb-2">Tap the left/right side of the road, or use ⬅ ➡ (A / D keys)</div>
+        <div class="d-flex gap-2">
+          <button id="gameLeft" class="btn btn-primary flex-fill">⬅</button>
+          <button id="gameStart" class="btn btn-success flex-fill">▶ Start</button>
+          <button id="gameRight" class="btn btn-primary flex-fill">➡</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="profileScreen" class="screen-view">
+      <div class="card border-0 shadow-sm rounded-4 p-4 text-center mb-3">
+        <i class="bi bi-person-circle display-1 text-primary mb-2"></i>
+        <h5 class="fw-bold" id="profileName"></h5>
+        <p class="text-secondary small mb-1" id="profilePhone"></p>
+        <p class="text-secondary small mb-0" id="profileEmail"></p>
+      </div>
+      <div class="card border-0 shadow-sm rounded-4 p-3 mb-3">
+        <h6 class="fw-bold" data-i18n="myCard"></h6>
+        <p class="small mb-2"><span id="cardStatus" class="text-secondary"></span></p>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-primary btn-sm rounded-pill flex-fill" data-action="linkCard"><i class="bi bi-nfc"></i> <span data-i18n="linkCard"></span></button>
+          <button class="btn btn-outline-danger btn-sm rounded-pill flex-fill d-none" id="unlinkBtn" data-action="unlinkCard"><span data-i18n="unlinkCard"></span></button>
+        </div>
+      </div>
+      <button class="btn btn-outline-danger w-100 rounded-3 fw-bold" data-action="logout" data-i18n="logoutBtn"></button>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav d-none" id="bottomNav">
+  <button class="nav-btn active" data-action="nav" data-screen="homeScreen"><i class="bi bi-house-door-fill"></i><span data-i18n="navHome"></span></button>
+  <button class="nav-btn" data-action="nav" data-screen="transactionsScreen"><i class="bi bi-receipt"></i><span data-i18n="navTx"></span></button>
+  <button class="nav-btn" data-action="nav" data-screen="gameScreen"><i class="bi bi-controller"></i><span>Game</span></button>
+  <button class="nav-btn" data-action="nav" data-screen="profileScreen"><i class="bi bi-person"></i><span data-i18n="navProfile"></span></button>
+    
+</nav>
+
+<div class="modal fade" id="topupModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content rounded-4 border-0">
+    <div class="modal-header border-0 pb-0">
+      <h5 class="modal-title fw-bold text-primary" data-i18n="topupBtn"></h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <label class="form-label fw-semibold" for="topupAmount" data-i18n="amountLabel"></label>
+      <input type="number" id="topupAmount" class="form-control form-control-lg mb-3" value="50" min="1" step="1" inputmode="decimal">
+      <button class="btn btn-primary w-100 py-3 rounded-4 fw-bold" data-action="topup" data-i18n="btnPayTelebirr"></button>
+    </div>
+  </div></div>
+</div>
+
+<div class="modal fade" id="qrModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content rounded-4 border-0">
+    <div class="modal-header border-0 pb-0">
+      <h5 class="modal-title fw-bold text-primary" data-i18n="qrTitle"></h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body text-center">
+      <div class="qr-box" id="qrBox"><div class="spinner-border text-primary m-5"></div></div>
+      <p class="text-secondary small mt-3 mb-1" data-i18n="qrHint"></p>
+      <div id="qrToken" class="token-text text-secondary"></div>
+    </div>
+  </div></div>
+</div>
+
+<script defer src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script defer src="/socket.io/socket.io.js"></script>
+<script defer src="/js/i18n.js"></script>
+<script defer src="/js/common.js"></script>
+<script defer src="/js/passenger.js"></script>
+<script defer src="/js/game.js"></script>
+</body>
+</html>

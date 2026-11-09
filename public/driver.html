@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="am" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#198754">
+  <title>Transit Driver Terminal</title>
+  <link rel="manifest" href="/manifest-driver.json">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/css/app.css" rel="stylesheet">
+</head>
+<body>
+<div id="toastContainer"></div>
+
+<div class="app-container p-3">
+  <header class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-danger rounded-pill px-2 py-1"><i class="bi bi-bus-front me-1"></i>TERMINAL</span>
+      <h6 class="fw-bold mb-0" data-i18n="appTitle"></h6>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <select id="langSelect" class="form-select form-select-sm fw-semibold w-auto" aria-label="Language">
+        <option value="am">አማርኛ</option>
+        <option value="om">Afaan Oromoo</option>
+        <option value="ti">ትግርኛ</option>
+        <option value="en">English</option>
+        <option value="so">Soomaali</option>
+        <option value="sid">Sidaamu Afoo</option>
+      </select>
+      <button id="themeBtn" class="btn btn-sm btn-outline-secondary rounded-circle" aria-label="Theme"><i class="bi bi-moon-stars-fill" id="themeIcon"></i></button>
+      <button id="logoutBtn" class="btn btn-sm btn-outline-danger d-none" data-action="logout" aria-label="Logout"><i class="bi bi-box-arrow-right"></i></button>
+    </div>
+  </header>
+
+  <!-- AUTH -->
+  <main id="authScreen">
+    <div class="text-center my-3">
+      <div class="bg-primary bg-opacity-10 text-primary d-inline-flex p-3 rounded-circle mb-2"><i class="bi bi-person-vcard fs-1"></i></div>
+      <h4 class="fw-bold mb-1" data-i18n="authPortalHeading"></h4>
+      <p class="text-secondary small mb-1" data-i18n="authPortalSub"></p>
+      <a href="/" class="small text-decoration-none" data-i18n="passengerApp"></a>
+    </div>
+    <div class="card border-0 shadow-sm rounded-4 p-4">
+      <ul class="nav nav-pills nav-justified mb-3">
+        <li class="nav-item"><button class="nav-link active fw-bold" id="tabLogin" data-action="authTab" data-tab="login" data-i18n="tabLogin"></button></li>
+        <li class="nav-item"><button class="nav-link fw-bold" id="tabRegister" data-action="authTab" data-tab="register" data-i18n="tabRegister"></button></li>
+      </ul>
+      <div id="authAlert" class="alert alert-danger d-none py-2 small fw-semibold text-center" role="alert"></div>
+
+      <form id="loginForm" novalidate>
+        <div class="mb-3">
+          <label class="form-label small fw-bold" for="loginId" data-i18n="labelPhoneOrEmail"></label>
+          <input id="loginId" class="form-control" autocomplete="username" placeholder="0911223344" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-bold" for="loginPassword" data-i18n="labelPassword"></label>
+          <input type="password" id="loginPassword" class="form-control" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 py-2 rounded-3 fw-bold" data-i18n="btnLogin"></button>
+      </form>
+
+      <form id="registerForm" class="d-none" novalidate>
+        <div class="mb-2">
+          <label class="form-label small fw-bold" for="regName" data-i18n="labelFullName"></label>
+          <input id="regName" class="form-control" autocomplete="name" required>
+        </div>
+        <div class="mb-2">
+          <label class="form-label small fw-bold" for="regPhone" data-i18n="labelPhone"></label>
+          <input type="tel" id="regPhone" class="form-control" autocomplete="tel" placeholder="0911223344" required>
+        </div>
+        <div class="row g-2 mb-2">
+          <div class="col-7">
+            <label class="form-label small fw-bold" for="regLicense" data-i18n="labelLicense"></label>
+            <input id="regLicense" class="form-control" required>
+          </div>
+          <div class="col-5">
+            <label class="form-label small fw-bold" for="regPlate" data-i18n="labelPlate"></label>
+            <input id="regPlate" class="form-control">
+          </div>
+        </div>
+        <div class="mb-2">
+          <label class="form-label small fw-bold" for="regVehicle" data-i18n="labelVehicleType"></label>
+          <select id="regVehicle" class="form-select">
+            <option value="bajaj" data-i18n="vehBajaj"></option>
+            <option value="e_bajaj" data-i18n="vehEBajaj"></option>
+            <option value="taxi" data-i18n="vehTaxi"></option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-bold" for="regPassword" data-i18n="labelPassword"></label>
+          <input type="password" id="regPassword" class="form-control" autocomplete="new-password" minlength="6" required>
+        </div>
+        <button type="submit" class="btn btn-success w-100 py-2 rounded-3 fw-bold" data-i18n="btnRegister"></button>
+      </form>
+    </div>
+  </main>
+
+  <!-- DASHBOARD -->
+  <main id="dashboardScreen" class="d-none">
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+          <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-5" style="width:48px;height:48px" id="driverAvatar">D</div>
+          <div>
+            <h6 class="fw-bold mb-0" id="driverName"></h6>
+            <small class="text-secondary" id="driverMeta"></small>
+          </div>
+        </div>
+        <span class="badge bg-success-subtle text-success fw-bold px-3 py-2 rounded-pill"><i class="bi bi-record-fill me-1"></i><span data-i18n="statusOnDuty"></span></span>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+        <div>
+          <small class="text-secondary fw-semibold d-block" data-i18n="walletLabel"></small>
+          <span class="fw-bold fs-5"><span id="walletBalance">0.00</span> ETB</span>
+        </div>
+        <button class="btn btn-sm btn-outline-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#withdrawModal"><i class="bi bi-cash-stack me-1"></i><span data-i18n="btnWithdraw"></span></button>
+      </div>
+    </div>
+
+    <div id="pendingAlert" class="alert alert-warning d-none d-flex justify-content-between align-items-center">
+      <span data-i18n="pendingApproval"></span>
+      <button class="btn btn-sm btn-warning" data-action="refreshStatus" data-i18n="btnRefresh"></button>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="fw-bold mb-0" data-i18n="secSelectVehicle"></h6>
+        <span class="badge bg-secondary-subtle text-secondary" id="capacityLabel"></span>
+      </div>
+      <div class="row g-2">
+        <div class="col-4"><div class="card vehicle-card rounded-3 p-2 text-center" data-action="vehicle" data-vehicle="bajaj"><i class="bi bi-scooter fs-3 text-primary"></i><span class="fw-bold small" data-i18n="vehBajaj"></span><span class="text-secondary small">3 <span data-i18n="unitPass"></span></span></div></div>
+        <div class="col-4"><div class="card vehicle-card rounded-3 p-2 text-center" data-action="vehicle" data-vehicle="e_bajaj"><i class="bi bi-ev-front fs-3 text-primary"></i><span class="fw-bold small" data-i18n="vehEBajaj"></span><span class="text-secondary small">6 <span data-i18n="unitPass"></span></span></div></div>
+        <div class="col-4"><div class="card vehicle-card rounded-3 p-2 text-center" data-action="vehicle" data-vehicle="taxi"><i class="bi bi-bus-front fs-3 text-primary"></i><span class="fw-bold small" data-i18n="vehTaxi"></span><span class="text-secondary small">14 <span data-i18n="unitPass"></span></span></div></div>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-3">
+      <h6 class="fw-bold mb-2" data-i18n="secRouteFare"></h6>
+      <div class="row g-2">
+        <div class="col-7">
+          <label class="form-label small fw-bold mb-1 text-secondary" for="routeInput" data-i18n="labelRoute"></label>
+          <input id="routeInput" class="form-control form-control-sm" maxlength="60">
+        </div>
+        <div class="col-5">
+          <label class="form-label small fw-bold mb-1 text-secondary" for="fareInput" data-i18n="labelFare"></label>
+          <input type="number" id="fareInput" class="form-control form-control-sm" step="0.5" min="0.5" inputmode="decimal">
+        </div>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 text-center">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <span class="fw-bold small text-secondary" data-i18n="labelPsgLoad"></span>
+        <span class="badge bg-primary rounded-pill px-2" id="vehBadge"></span>
+      </div>
+      <div class="display-3 fw-bold my-1"><span id="psgCount">0</span> <span class="fs-4 text-secondary">/ <span id="psgMax">3</span></span></div>
+      <div class="progress progress-thick mb-3 bg-secondary-subtle"><div id="capacityBar" class="progress-bar bg-success" style="width:0%"></div></div>
+      <div class="d-flex justify-content-center gap-2">
+        <button class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-semibold" data-action="psg" data-delta="-1"><i class="bi bi-dash-circle me-1"></i><span data-i18n="btnOffboard"></span></button>
+        <button class="btn btn-outline-success btn-sm rounded-pill px-3 fw-semibold" data-action="psg" data-delta="1"><i class="bi bi-plus-circle me-1"></i><span data-i18n="btnOnboard"></span></button>
+        <button class="btn btn-outline-secondary btn-sm rounded-circle" data-action="psgReset" aria-label="Reset"><i class="bi bi-arrow-counterclockwise"></i></button>
+      </div>
+    </div>
+
+    <div class="card terminal-scanner rounded-4 p-4 text-center mb-3" id="terminal">
+      <i class="bi bi-phone-vibrate display-2 text-success mb-2"></i>
+      <h5 class="fw-bold mb-1" data-i18n="readyToReceive"></h5>
+      <p class="text-secondary small mb-3" id="terminalHint" data-i18n="scanPrompt"></p>
+      <div id="resultBanner" class="alert py-2 fw-bold" role="status"></div>
+      <div class="d-grid gap-2">
+        <button class="btn btn-success py-3 rounded-3 fw-bold fs-5 shadow-sm term-btn" id="nfcBtn" data-action="toggleNfc"><i class="bi bi-nfc me-1"></i><span id="nfcBtnText" data-i18n="btnTapNFC"></span></button>
+        <button class="btn btn-outline-primary py-2 rounded-3 fw-semibold term-btn" data-bs-toggle="modal" data-bs-target="#scanModal"><i class="bi bi-qr-code-scan me-1"></i><span data-i18n="btnScanQR"></span></button>
+        <button class="btn btn-link btn-sm term-btn d-none" id="manualBtn" data-action="manual" data-i18n="btnManual"></button>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+        <div>
+          <small class="text-secondary fw-semibold d-block" data-i18n="lblShiftEarnings"></small>
+          <h4 class="fw-bold mb-0 text-success"><span id="totalEarnings">0.00</span> ETB</h4>
+        </div>
+        <div class="text-end">
+          <small class="text-secondary fw-semibold d-block" data-i18n="lblTotalPassengers"></small>
+          <h5 class="fw-bold mb-0" id="totalCount">0</h5>
+        </div>
+      </div>
+      <h6 class="fw-bold mb-2 small text-secondary" data-i18n="lblRecentBoardings"></h6>
+      <div class="list-group list-group-flush" id="recentList"></div>
+    </div>
+  </main>
+</div>
+
+<div class="modal fade" id="scanModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content rounded-4 border-0">
+    <div class="modal-header border-0 pb-0">
+      <h5 class="modal-title fw-bold text-primary" data-i18n="scanQrTitle"></h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body"><div id="qrReader"></div></div>
+  </div></div>
+</div>
+
+<div class="modal fade" id="withdrawModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content rounded-4 border-0">
+    <div class="modal-header border-0 pb-0">
+      <h5 class="modal-title fw-bold text-primary" data-i18n="btnWithdraw"></h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <label class="form-label fw-semibold" for="withdrawAmount" data-i18n="amountLabel"></label>
+      <input type="number" id="withdrawAmount" class="form-control form-control-lg mb-3" min="1" step="1" inputmode="decimal">
+      <button class="btn btn-primary w-100 py-3 rounded-4 fw-bold" data-action="withdraw" data-i18n="btnConfirm"></button>
+    </div>
+  </div></div>
+</div>
+
+<script defer src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script defer src="/vendor/html5-qrcode/html5-qrcode.min.js"></script>
+<script defer src="/socket.io/socket.io.js"></script>
+<script defer src="/js/i18n.js"></script>
+<script defer src="/js/common.js"></script>
+<script defer src="/js/driver.js"></script>
+</body>
+</html>
